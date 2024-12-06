@@ -1,5 +1,3 @@
-DevMsg("BAS Client Init\n")
-
 SWEP.PrintName = "Basically A SWEP"
 
 SWEP.Author = "Very Bad Developer"
