@@ -291,10 +291,10 @@ function SWEP:CalculateBulletSpread(Offset)
 	local FireTable = self:GetCurrentFireTable()
 	local Spread = Vector(FireTable.BulletSpread)
 
-	math.randomseed(self:GetRandomSeed() + Offset)
+	BAS.minstd:SetSeed(self:GetRandomSeed())
 
-	Spread.x = math.Rand(0, Spread.x)
-	Spread.y = math.Rand(0, Spread.y)
+	Spread.x = BAS.minstd:RandomFloat(0, Spread.x)
+	Spread.y = BAS.minstd:RandomFloat(0, Spread.y)
 
 	return Spread
 end
