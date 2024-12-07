@@ -9,6 +9,8 @@ SWEP.Slot = 1
 SWEP.ViewModel = Model("models/weapons/c_pistol.mdl")
 SWEP.WorldModel = Model("models/weapons/w_pistol.mdl")
 
+SWEP.ReloadSound = ")weapons/pistol/pistol_reload1.wav"
+
 SWEP.Primary = BAS.Util.SetupAmmoTable({
 	Ammo = "Pistol",
 	ClipSize = 8,

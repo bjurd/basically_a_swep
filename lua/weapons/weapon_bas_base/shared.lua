@@ -6,6 +6,8 @@ SWEP.WorldModel = Model("models/error.mdl")
 
 SWEP.UseHands = true
 
+SWEP.ReloadSound = ""
+
 SWEP.Primary = BAS.Util.GenerateAmmoTable()
 SWEP.Secondary = BAS.Util.GenerateAmmoTable()
 
@@ -28,6 +30,8 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Precache()
+	util.PrecacheSound(self.ReloadSound or "")
+
 	util.PrecacheSound(self.Primary.Sound or "")
 	util.PrecacheSound(self.Secondary.Sound or "")
 
@@ -75,6 +79,7 @@ function SWEP:Reload()
 	local DefaultSuccess = self:DefaultReload(self:GetReloadAnimation())
 
 	if DefaultSuccess then
+		self:EmitSound(self.ReloadSound)
 		self:SetReloadFinishTime(CurTime() + self:SequenceDuration(self:GetReloadAnimation()))
 
 		self:CallOnOwner("SetAnimation", self:GetOwnerReloadAnimation())
