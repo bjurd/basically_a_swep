@@ -28,8 +28,6 @@ SWEP.Primary = BAS.Util.SetupAmmoTable({
 
 function SWEP:OnInitialized()
 	self:SetHoldType("shotgun")
-
-	self:SetReloadAnimation(ACT_SHOTGUN_RELOAD_FINISH)
 end
 
 function SWEP:OnPrimaryAttack()

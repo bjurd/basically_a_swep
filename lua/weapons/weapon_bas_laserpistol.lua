@@ -37,8 +37,6 @@ SWEP.BlacklistClasses = {
 
 function SWEP:OnInitialized()
 	self:SetHoldType("pistol")
-
-	self:SetReloadAnimation(ACT_RELOAD_PISTOL)
 end
 
 function SWEP:OnPrimaryAttack()
