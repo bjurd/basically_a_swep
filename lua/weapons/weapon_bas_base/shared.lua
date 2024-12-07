@@ -103,7 +103,11 @@ function SWEP:PrimaryAttack()
 
 		if BlockAnimations ~= false then
 			self:SendWeaponAnim(self:GetPrimaryAttackAnimation())
+
+			self:CallOnOwner("MuzzleFlash")
 			self:CallOnOwner("SetAnimation", self:GetOwnerPrimaryAttackAnimation())
+
+			self:EmitSound(self.Primary.Sound)
 		end
 	end
 	self:SetInPrimaryFire(false)
@@ -118,7 +122,11 @@ function SWEP:SecondaryAttack()
 
 		if BlockAnimations ~= false then
 			self:SendWeaponAnim(self:GetSecondaryAttackAnimation())
+
+			self:CallOnOwner("MuzzleFlash")
 			self:CallOnOwner("SetAnimation", self:GetOwnerSecondaryAttackAnimation())
+
+			self:EmitSound(self.Secondary.Sound)
 		end
 	end
 	self:SetInSecondaryFire(false)
@@ -126,12 +134,12 @@ end
 
 function SWEP:OnPrimaryAttack()
 	-- For override
-	-- Return false to prevent animations
+	-- Return false to prevent animations, muzzle flash and sounds
 end
 
 function SWEP:OnSecondaryAttack()
 	-- For override
-	-- Return false to prevent animations
+	-- Return false to prevent animations, muzzle flash and sounds
 end
 
 -- Utilities
