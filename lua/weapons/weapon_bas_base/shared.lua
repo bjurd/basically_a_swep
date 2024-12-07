@@ -23,7 +23,21 @@ AccessorFunc(SWEP, "m_bInPrimaryFire", "InPrimaryFire", FORCE_BOOL)
 AccessorFunc(SWEP, "m_bInSecondaryFire", "InSecondaryFire", FORCE_BOOL)
 
 -- Hooks
+function SWEP:SetupDataTables()
+	self:NetworkVar("Float", 0, "ReloadFinishTime")
+end
+
+function SWEP:Precache()
+	util.PrecacheSound(self.Primary.Sound or "")
+	util.PrecacheSound(self.Secondary.Sound or "")
+
+	util.PrecacheModel(self.ViewModel)
+	util.PrecacheModel(self.WorldModel)
+end
+
 function SWEP:Initialize()
+	self:Precache()
+
 	self:SetReloadAnimation(ACT_VM_RELOAD)
 	self:SetOwnerReloadAnimation(PLAYER_RELOAD)
 
@@ -48,6 +62,8 @@ function SWEP:OnInitialized()
 end
 
 function SWEP:CanReload()
+	if CurTime() < self:GetReloadFinishTime() then return false end
+
 	-- For override
 
 	return true
@@ -59,7 +75,11 @@ function SWEP:Reload()
 	local DefaultSuccess = self:DefaultReload(self:GetReloadAnimation())
 
 	if DefaultSuccess then
+		self:SetReloadFinishTime(CurTime() + self:SequenceDuration(self:GetReloadAnimation()))
+
 		self:CallOnOwner("SetAnimation", self:GetOwnerReloadAnimation())
+	else
+		self:SetReloadFinishTime(0)
 	end
 
 	return self:OnReload(DefaultSuccess)
@@ -70,6 +90,7 @@ function SWEP:OnReload(DefaultSuccess)
 end
 
 function SWEP:CanPrimaryAttack()
+	if CurTime() < self:GetReloadFinishTime() then return false end -- Reload animation playing
 	if not self.Primary.Enabled then return false end
 
 	if CurTime() < self:GetNextPrimaryFire() then return false end
@@ -84,6 +105,7 @@ function SWEP:CanPrimaryAttack()
 end
 
 function SWEP:CanSecondaryAttack()
+	if CurTime() < self:GetReloadFinishTime() then return false end -- Reload animation playing
 	if not self.Secondary.Enabled then return false end
 
 	if CurTime() < self:GetNextSecondaryFire() then return false end
