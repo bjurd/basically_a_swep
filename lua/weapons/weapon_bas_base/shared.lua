@@ -229,3 +229,13 @@ function SWEP:GenerateBullet(Output)
 
 	return Output
 end
+
+function SWEP:RunTrace(StartPos, EndPos)
+	local TraceData = BAS.Util.ResetTrace()
+
+	TraceData.start = StartPos
+	TraceData.endpos = EndPos
+	TraceData.filter = { self, self:GetOwner() }
+
+	return BAS.Util.RunTrace()
+end
