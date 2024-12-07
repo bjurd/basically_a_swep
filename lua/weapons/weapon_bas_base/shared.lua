@@ -286,7 +286,7 @@ function SWEP:GenerateBullet(Output, BulletIndex)
 	Output.AmmoType = FireTable.Ammo
 	Output.Damage = FireTable.BulletDamage
 	Output.Distance = FireTable.BulletDistance
-	Output.Force = 0
+	Output.Force = 1
 	Output.HullSize = 0
 	Output.Num = 1
 	Output.Tracer = 1
