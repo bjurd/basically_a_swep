@@ -255,3 +255,26 @@ function SWEP:RunTrace(StartPos, EndPos)
 
 	return BAS.Util.RunTrace()
 end
+
+function SWEP:FireBasicBullets()
+	local Owner = self:GetOwner()
+	assert(IsValid(Owner), "Tried to FireBasicBullets with invalid owner!")
+
+	local FireTable = self:GetCurrentFireTable()
+
+	if Owner:IsPlayer() then
+		Owner:LagCompensation(true)
+	end
+	do
+		local BulletData = {}
+
+		for BulletIndex = 1, FireTable.BulletCount do
+			self:GenerateBullet(BulletData)
+
+			Owner:FireBullets(BulletData)
+		end
+	end
+	if Owner:IsPlayer() then
+		Owner:LagCompensation(false)
+	end
+end
