@@ -4,7 +4,7 @@ SWEP.PrintName = "Ball Shooter"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 
-SWEP.Slot = 6
+SWEP.Slot = 3
 
 SWEP.ViewModel = Model("models/weapons/c_shotgun.mdl")
 SWEP.WorldModel = Model("models/weapons/w_shotgun.mdl")
