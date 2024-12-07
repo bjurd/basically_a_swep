@@ -152,3 +152,25 @@ function SWEP:ApplyNextFireTime()
 		error("Tried to ApplyNextFireTime outside of fire!", 2)
 	end
 end
+
+function SWEP:ApplyViewPunch()
+	local InPrimaryFire = self:GetInPrimaryFire()
+	local InSecondaryFire = self:GetInSecondaryFire()
+
+	if not InPrimaryFire and not InSecondaryFire then
+		return error("Tried to ApplyViewPunch outside of fire!", 2)
+	end
+
+	local Owner = self:GetOwner()
+	if not Owner:IsPlayer() then return end -- Don't call on invalid owner kthx
+
+	local PunchCone = (InPrimaryFire and self.Primary or self.Secondary).ViewPunch
+	if PunchCone:IsZero() then return end
+
+	local VeritcalPunch = math.Rand(-math.abs(PunchCone.x), 0)
+	if PunchCone.x < 0 then VeritcalPunch = -VeritcalPunch end
+
+	local HorizontalPunch = math.Rand(-PunchCone.y, PunchCone.y)
+
+	Owner:ViewPunch(Angle(VeritcalPunch, HorizontalPunch))
+end
