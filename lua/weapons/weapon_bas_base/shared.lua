@@ -203,3 +203,27 @@ function SWEP:ApplyAimPunch()
 		Owner:SetAngles(EyeAngles)
 	end
 end
+
+function SWEP:GenerateBullet()
+	local InPrimaryFire = self:GetCurrentFireFlags()
+	local AmmoData = InPrimaryFire and self.Primary or self.Secondary
+
+	local Owner = self:GetOwner()
+
+	return {
+		Attacker = Owner,
+		IgnoreEntity = Owner,
+
+		Src = Owner:EyePos(),
+		Dir = Owner:EyeAngles():Forward(),
+		Spread = Vector(AmmoData.BulletSpread),
+
+		AmmoType = AmmoData.Ammo,
+		Distance = AmmoData.BulletDistance,
+		Damage = AmmoData.BulletDamage,
+		Num = 1,
+		Force = 0,
+		HullSize = 0,
+		Tracer = 1
+	}
+end
