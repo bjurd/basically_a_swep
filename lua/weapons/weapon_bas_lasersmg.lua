@@ -32,6 +32,38 @@ SWEP.Primary = BAS.Util.SetupAmmoTable({
 	Sound = "beams/beamstart5.wav"
 })
 
+SWEP.Secondary = BAS.Util.SetupAmmoTable({
+	Ammo = "SMG1",
+	ClipSize = 1,
+	DefaultClip = 1,
+	Automatic = false,
+
+	ViewPunch = Vector(6, 4),
+	AimPunch = Vector(1, 0.75),
+
+	BulletSpread = Vector(0.1, 0.1),
+	BulletCount = 1,
+	BulletDamage = 70,
+	FireInterval = 1.5,
+
+	UsesAmmo = true,
+	Enabled = true,
+
+	Sound = "beams/beamstart5.wav"
+})
+
 function SWEP:OnInitialized()
 	self:SetHoldType("smg")
+end
+
+function SWEP:OnSecondaryAttack()
+	self:FireBasicBullets()
+
+	self:TakePrimaryAmmo(1)
+	self:ApplyNextFireTime()
+
+	self:ApplyViewPunch()
+	self:ApplyAimPunch()
+
+	return true
 end
