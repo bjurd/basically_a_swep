@@ -151,31 +151,28 @@ function SWEP:CallOnOwner(FunctionName, ...)
 	return Owner[FunctionName](Owner, ...)
 end
 
-function SWEP:GetCurrentFireFlags(IgnoreInFire)
-	local InPrimaryFire = self:GetInPrimaryFire()
-	local InSecondaryFire = self:GetInSecondaryFire()
+function SWEP:EitherFireMode(Primary, Secondary, Fallback)
+	if self:GetInPrimaryFire() then return Primary end
+	if self:GetInSecondaryFire() then return Secondary end
 
-	if not IgnoreInFire and (not InPrimaryFire and not InSecondaryFire) then
-		return error("Tried to do fire operation outside of fire!")
-	end
-
-	return InPrimaryFire, InSecondaryFire
+	return Fallback
 end
 
 function SWEP:GetCurrentFireTable()
-	local InPrimaryFire = self:GetCurrentFireFlags()
+	local FireTable = self:EitherFireMode(self.Primary, self.Secondary)
+	assert(FireTable, "Tried to do fire operation outside of fire!")
 
-	return InPrimaryFire and self.Primary or self.Secondary
+	return FireTable
 end
 
 function SWEP:ApplyNextFireTime()
-	local InPrimaryFire = self:GetCurrentFireFlags()
+	local FireTable = self:GetCurrentFireTable()
+	assert(FireTable, "Tried to ApplyNextFireTime outside of fire!")
 
-	if self:GetCurrentFireFlags() then
-		self:SetNextPrimaryFire(CurTime() + self.Primary.FireRate)
-	else
-		self:SetNextSecondaryFire(CurTime() + self.Secondary.FireRate)
-	end
+	local ApplyFunction = self:EitherFireMode(self.SetNextPrimaryFire, self.SetNextSecondaryFire)
+	assert(ApplyFunction, "Tried to ApplyNextFireTime outside of fire!")
+
+	ApplyFunction(self, CurTime() + FireTable.FireInterval)
 end
 
 function SWEP:ApplyViewPunch()
