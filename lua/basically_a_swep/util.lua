@@ -37,3 +37,7 @@ function BAS_Util.RunTrace()
 
 	return BAS_Util.TraceOutput
 end
+
+function BAS_Util.GetTimeSeed() -- :fire:
+	return SysTime() + CurTime() + UnPredictedCurTime() + os.time()
+end

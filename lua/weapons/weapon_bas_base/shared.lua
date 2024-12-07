@@ -24,6 +24,8 @@ AccessorFunc(SWEP, "m_iOwnerSecondaryAttackAnimation", "OwnerSecondaryAttackAnim
 AccessorFunc(SWEP, "m_bInPrimaryFire", "InPrimaryFire", FORCE_BOOL)
 AccessorFunc(SWEP, "m_bInSecondaryFire", "InSecondaryFire", FORCE_BOOL)
 
+AccessorFunc(SWEP, "m_iRandomSeed", "RandomSeed", FORCE_NUMBER)
+
 -- Hooks
 function SWEP:SetupDataTables()
 	self:NetworkVar("Float", 0, "ReloadFinishTime")
@@ -50,6 +52,8 @@ function SWEP:Initialize()
 
 	self:SetSecondaryAttackAnimation(ACT_VM_SECONDARYATTACK)
 	self:SetOwnerSecondaryAttackAnimation(PLAYER_ATTACK1)
+
+	self:SetRandomSeed(BAS.minstd:RandomInt(10000, 9999999)) -- RandomInt returning floats wtflip
 
 	hook.Add("PostEntityFireBullets", self, function(self, Entity, Data)
 		if Entity ~= self:GetOwner() then return end
@@ -245,7 +249,9 @@ function SWEP:ApplyAimPunch()
 	end
 end
 
-function SWEP:GenerateBullet(Output)
+function SWEP:GenerateBullet(Output, BulletIndex)
+	BulletIndex = tonumber(BulletIndex) or 1
+
 	local FireTable = self:GetCurrentFireTable()
 	local Owner = self:GetOwner()
 
@@ -256,7 +262,7 @@ function SWEP:GenerateBullet(Output)
 
 	Output.Src = Owner:EyePos()
 	Output.Dir = Owner:EyeAngles():Forward()
-	Output.Spread = Vector(FireTable.BulletSpread)
+	Output.Spread = self:CalculateBulletSpread(BulletIndex)
 
 	Output.AmmoType = FireTable.Ammo
 	Output.Damage = FireTable.BulletDamage
@@ -279,6 +285,20 @@ function SWEP:RunTrace(StartPos, EndPos)
 	return BAS.Util.RunTrace()
 end
 
+function SWEP:CalculateBulletSpread(Offset)
+	Offset = tonumber(Offset) or 0
+
+	local FireTable = self:GetCurrentFireTable()
+	local Spread = Vector(FireTable.BulletSpread)
+
+	math.randomseed(self:GetRandomSeed() + Offset)
+
+	Spread.x = math.Rand(0, Spread.x)
+	Spread.y = math.Rand(0, Spread.y)
+
+	return Spread
+end
+
 function SWEP:FireBasicBullets()
 	if not IsFirstTimePredicted() then return end
 
@@ -294,7 +314,7 @@ function SWEP:FireBasicBullets()
 		local BulletData = {}
 
 		for BulletIndex = 1, FireTable.BulletCount do
-			self:GenerateBullet(BulletData)
+			self:GenerateBullet(BulletData, BulletIndex)
 
 			Owner:FireBullets(BulletData)
 		end
