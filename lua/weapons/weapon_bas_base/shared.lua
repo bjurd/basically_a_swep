@@ -48,8 +48,6 @@ function SWEP:OnInitialized()
 end
 
 function SWEP:CanReload()
-	if not IsFirstTimePredicted() then return false end
-
 	-- For override
 
 	return true
@@ -72,7 +70,6 @@ function SWEP:OnReload(DefaultSuccess)
 end
 
 function SWEP:CanPrimaryAttack()
-	if not IsFirstTimePredicted() then return false end
 	if not self.Primary.Enabled then return false end
 
 	if CurTime() < self:GetNextPrimaryFire() then return false end
@@ -87,7 +84,6 @@ function SWEP:CanPrimaryAttack()
 end
 
 function SWEP:CanSecondaryAttack()
-	if not IsFirstTimePredicted() then return false end
 	if not self.Secondary.Enabled then return false end
 
 	if CurTime() < self:GetNextSecondaryFire() then return false end
@@ -257,6 +253,8 @@ function SWEP:RunTrace(StartPos, EndPos)
 end
 
 function SWEP:FireBasicBullets()
+	if not IsFirstTimePredicted() then return end
+
 	local Owner = self:GetOwner()
 	assert(IsValid(Owner), "Tried to FireBasicBullets with invalid owner!")
 
