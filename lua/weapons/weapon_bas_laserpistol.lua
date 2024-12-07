@@ -23,7 +23,9 @@ SWEP.Primary = BAS.Util.SetupAmmoTable({
 	FireInterval = 0.2,
 
 	UsesAmmo = true,
-	Enabled = true
+	Enabled = true,
+
+	Sound = "npc/vort/attack_shoot.wav"
 })
 
 -- Don't light these on fire
