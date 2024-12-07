@@ -143,23 +143,29 @@ function SWEP:CallOnOwner(FunctionName, ...)
 	return Owner[FunctionName](Owner, ...)
 end
 
+function SWEP:GetCurrentFireFlags(IgnoreInFire)
+	local InPrimaryFire = self:GetInPrimaryFire()
+	local InSecondaryFire = self:GetInSecondaryFire()
+
+	if not IgnoreInFire and (not InPrimaryFire and not InSecondaryFire) then
+		return error("Tried to do fire operation outside of fire!")
+	end
+
+	return InPrimaryFire, InSecondaryFire
+end
+
 function SWEP:ApplyNextFireTime()
-	if self:GetInPrimaryFire() then
+	local InPrimaryFire = self:GetCurrentFireFlags()
+
+	if self:GetCurrentFireFlags() then
 		self:SetNextPrimaryFire(CurTime() + self.Primary.FireRate)
-	elseif self:GetInSecondaryFire() then
-		self:SetNextSecondaryFire(CurTime() + self.Secondary.FireRate)
 	else
-		error("Tried to ApplyNextFireTime outside of fire!", 2)
+		self:SetNextSecondaryFire(CurTime() + self.Secondary.FireRate)
 	end
 end
 
 function SWEP:ApplyViewPunch()
-	local InPrimaryFire = self:GetInPrimaryFire()
-	local InSecondaryFire = self:GetInSecondaryFire()
-
-	if not InPrimaryFire and not InSecondaryFire then
-		return error("Tried to ApplyViewPunch outside of fire!", 2)
-	end
+	local InPrimaryFire = self:GetCurrentFireFlags()
 
 	local Owner = self:GetOwner()
 	if not Owner:IsPlayer() then return end -- Don't call on invalid owner kthx
