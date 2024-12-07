@@ -33,6 +33,13 @@ function SWEP:Initialize()
 	self:SetSecondaryAttackAnimation(ACT_VM_SECONDARYATTACK)
 	self:SetOwnerSecondaryAttackAnimation(PLAYER_ATTACK1)
 
+	hook.Add("PostEntityFireBullets", self, function(self, Entity, Data)
+		if Entity ~= self:GetOwner() then return end
+		if Entity:GetActiveWeapon() ~= self then return end
+
+		self:PostFireBullets(Data)
+	end)
+
 	self:OnInitialized()
 end
 
@@ -140,6 +147,10 @@ end
 function SWEP:OnSecondaryAttack()
 	-- For override
 	-- Return false to prevent animations, muzzle flash and sounds
+end
+
+function SWEP:PostFireBullets()
+	-- For override
 end
 
 -- Utilities
