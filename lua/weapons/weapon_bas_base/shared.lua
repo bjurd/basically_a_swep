@@ -6,64 +6,8 @@ SWEP.WorldModel = Model("models/error.mdl")
 
 SWEP.UseHands = true
 
-SWEP.Primary = {
-	-- Default stuff
-	Ammo = "",
-	ClipSize = 1,
-	DefaultClip = 0,
-	Automatic = false,
-
-	-- View punch ranges up/down left/right
-	ViewPunch = Vector(0, 0),
-
-	-- Aim punch ranges up/down left/right
-	AimPunch = Vector(0, 0),
-
-	-- How many bullets to fire per shot
-	BulletCount = 0,
-
-	-- Bullet spread ranges up/down left/right
-	BulletSpread = Vector(0, 0),
-
-	-- Base damage of each bullet
-	BulletDamage = 0,
-
-	-- Maximum distance a bullet can travel
-	BulletDistance = 56756,
-
-	-- Whether or not this fire type uses ammo
-	UsesAmmo = true,
-
-	-- How many seconds between shots,
-	FireInterval = 0,
-
-	-- Whether or not this fire type can be used
-	Enabled = false,
-
-	-- The sound to play when fired
-	Sound = ""
-}
-
-SWEP.Secondary = {
-	Ammo = "",
-	ClipSize = 1,
-	DefaultClip = 0,
-	Automatic = false,
-
-	ViewPunch = Vector(0, 0),
-	AimPunch = Vector(0, 0),
-
-	BulletCount = 0,
-	BulletSpread = Vector(0, 0),
-	BulletDamage = 0,
-	BulletDistance = 56756,
-
-	UsesAmmo = true,
-	FireInterval = 0,
-	Enabled = false,
-
-	Sound = ""
-}
+SWEP.Primary = BAS.Util.GenerateAmmoTable()
+SWEP.Secondary = BAS.Util.GenerateAmmoTable()
 
 -- Extension things
 AccessorFunc(SWEP, "m_iReloadAnimation", "ReloadAnimation", FORCE_NUMBER)
@@ -74,14 +18,6 @@ AccessorFunc(SWEP, "m_iOwnerPrimaryAttackAnimation", "OwnerPrimaryAttackAnimatio
 
 AccessorFunc(SWEP, "m_iSecondaryAttackAnimation", "SecondaryAttackAnimation", FORCE_NUMBER)
 AccessorFunc(SWEP, "m_iOwnerSecondaryAttackAnimation", "OwnerSecondaryAttackAnimation", FORCE_NUMBER)
-
-function SWEP:CallOnOwner(FunctionName, ...)
-	local Owner = self:GetOwner()
-	if not IsValid(Owner) then return end
-
-	-- Let it error on purpose to alert retardation
-	return Owner[FunctionName](Owner, ...)
-end
 
 -- Hooks
 function SWEP:Initialize()
@@ -181,4 +117,21 @@ end
 function SWEP:OnSecondaryAttack()
 	-- For override
 	-- Return false to prevent animations
+end
+
+-- Utilities
+function SWEP:CallOnOwner(FunctionName, ...)
+	local Owner = self:GetOwner()
+	if not IsValid(Owner) then return end
+
+	-- Let it error on purpose to alert retardation
+	return Owner[FunctionName](Owner, ...)
+end
+
+function SWEP:ApplyNextFireTime(IsSecondary)
+	if IsSecondary then
+		self:SetNextSecondaryFire(CurTime() + self.Secondary.FireRate)
+	else
+		self:SetNextPrimaryFire(CurTime() + self.Primary.FireRate)
+	end
 end
