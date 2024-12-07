@@ -206,25 +206,26 @@ function SWEP:ApplyAimPunch()
 	end
 end
 
-function SWEP:GenerateBullet()
+function SWEP:GenerateBullet(Output)
 	local FireTable = self:GetCurrentFireTable()
-
 	local Owner = self:GetOwner()
 
-	return {
-		Attacker = Owner,
-		IgnoreEntity = Owner,
+	Output = Output or {}
 
-		Src = Owner:EyePos(),
-		Dir = Owner:EyeAngles():Forward(),
-		Spread = Vector(FireTable.BulletSpread),
+	Output.Attacker = Owner
+	Output.IgnoreEntity = Owner
 
-		AmmoType = FireTable.Ammo,
-		Damage = FireTable.BulletDamage,
-		Distance = FireTable.BulletDistance,
-		Force = 0,
-		HullSize = 0,
-		Num = 1,
-		Tracer = 1
-	}
+	Output.Src = Owner:EyePos()
+	Output.Dir = Owner:EyeAngles():Forward()
+	Output.Spread = Vector(FireTable.BulletSpread)
+
+	Output.AmmoType = FireTable.Ammo
+	Output.Damage = FireTable.BulletDamage
+	Output.Distance = FireTable.BulletDistance
+	Output.Force = 0
+	Output.HullSize = 0
+	Output.Num = 1
+	Output.Tracer = 1
+
+	return Output
 end
