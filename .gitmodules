@@ -1,0 +1,3 @@
+[submodule "lua/basically_a_swep/minstd"]
+	path = lua/basically_a_swep/minstd
+	url = https://github.com/Kefta/Lua-MINSTD
