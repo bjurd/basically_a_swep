@@ -258,13 +258,17 @@ function SWEP:GenerateBullet(Output, BulletIndex)
 	local Owner = self:GetOwner()
 
 	-- Randomize base direction as well
+	-- A little messy because minstd doesn't support negative numbers
 	local BulletSpread = self:CalculateBulletSpread(BulletIndex)
 
 	local Forward = Owner:GetForward()
 	local ForwardAngle = Forward:Angle()
 
-	ForwardAngle.pitch = ForwardAngle.pitch + BulletSpread.x
-	ForwardAngle.yaw = ForwardAngle.yaw + BulletSpread.y
+	local PitchSpread = BAS.minstd:RandomFloat(0, BulletSpread.x)
+	local YawSpread = BAS.minstd:RandomFloat(0, BulletSpread.y)
+
+	ForwardAngle.pitch = ForwardAngle.pitch + BAS.Util.EitherCoinFlip(-PitchSpread, PitchSpread)
+	ForwardAngle.yaw = ForwardAngle.yaw + BAS.Util.EitherCoinFlip(-YawSpread, YawSpread)
 
 	BAS.Util.NormalizeAngle(ForwardAngle)
 	Forward = ForwardAngle:Forward()
@@ -306,7 +310,7 @@ function SWEP:CalculateBulletSpread(Offset)
 	local FireTable = self:GetCurrentFireTable()
 	local Spread = Vector(FireTable.BulletSpread)
 
-	BAS.minstd:SetSeed(self:GetRandomSeed())
+	BAS.minstd:SetSeed(BAS.Util.GetTimeSeed() + self:GetRandomSeed() + Offset)
 
 	Spread.x = BAS.minstd:RandomFloat(0, Spread.x)
 	Spread.y = BAS.minstd:RandomFloat(0, Spread.y)

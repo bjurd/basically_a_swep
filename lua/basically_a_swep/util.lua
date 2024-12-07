@@ -47,3 +47,7 @@ function BAS_Util.NormalizeAngle(Angle)
 	Angle.yaw = math.NormalizeAngle(Angle.yaw)
 	Angle.roll = math.NormalizeAngle(Angle.roll)
 end
+
+function BAS_Util.EitherCoinFlip(A, B)
+	return BAS.minstd:RandomFloat() >= 0.5 and A or B
+end
