@@ -1,4 +1,5 @@
 SWEP.PrintName = "Basically A SWEP"
+SWEP.Category = "Basically Some SWEPs"
 
 SWEP.Author = "Very Bad Developer"
 
@@ -7,3 +8,7 @@ SWEP.Purpose = "Basically a weapon that shoots and is scripted\n" -- Newlines fo
 SWEP.Instructions = "Primary attack (left click) to attack\nSecondary attack (right click) to secondarily attack\n"
 
 include("shared.lua")
+
+function SWEP:CalcViewModelView() -- Fix FOV issues
+	self.ViewModelFOV = GetConVar("viewmodel_fov"):GetInt()
+end
