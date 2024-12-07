@@ -41,3 +41,9 @@ end
 function BAS_Util.GetTimeSeed() -- :fire:
 	return SysTime() + CurTime() + UnPredictedCurTime() + os.time()
 end
+
+function BAS_Util.NormalizeAngle(Angle)
+	Angle.pitch = math.Clamp(math.NormalizeAngle(Angle.pitch), -89, 89)
+	Angle.yaw = math.NormalizeAngle(Angle.yaw)
+	Angle.roll = math.NormalizeAngle(Angle.roll)
+end
