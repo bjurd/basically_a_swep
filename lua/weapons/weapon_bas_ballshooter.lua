@@ -17,7 +17,7 @@ SWEP.Primary = BAS.Util.SetupAmmoTable({
 
 	ViewPunch = Vector(1, 1),
 
-	BulletSpread = Vector(32, 32),
+	BulletSpread = Vector(16, 16),
 	BulletCount = 3,
 	FireInterval = 0.25,
 
