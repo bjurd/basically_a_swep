@@ -1,6 +1,7 @@
 SWEP.Base = "weapon_bas_base"
 SWEP.PrintName = "Laser Pistol"
 
+SWEP.Category = "Basically Some SWEPs"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 

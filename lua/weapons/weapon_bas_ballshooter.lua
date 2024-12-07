@@ -1,6 +1,7 @@
 SWEP.Base = "weapon_bas_base"
 SWEP.PrintName = "Ball Shooter"
 
+SWEP.Category = "Basically Some SWEPs"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 

@@ -1,5 +1,4 @@
 SWEP.PrintName = "Basically A SWEP"
-SWEP.Category = "Basically Some SWEPs"
 
 SWEP.Author = "Very Bad Developer"
 
