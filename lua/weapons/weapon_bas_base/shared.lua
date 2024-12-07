@@ -19,6 +19,9 @@ AccessorFunc(SWEP, "m_iOwnerPrimaryAttackAnimation", "OwnerPrimaryAttackAnimatio
 AccessorFunc(SWEP, "m_iSecondaryAttackAnimation", "SecondaryAttackAnimation", FORCE_NUMBER)
 AccessorFunc(SWEP, "m_iOwnerSecondaryAttackAnimation", "OwnerSecondaryAttackAnimation", FORCE_NUMBER)
 
+AccessorFunc(SWEP, "m_bInPrimaryFire", "InPrimaryFire", FORCE_BOOL)
+AccessorFunc(SWEP, "m_bInSecondaryFire", "InSecondaryFire", FORCE_BOOL)
+
 -- Hooks
 function SWEP:Initialize()
 	self:SetReloadAnimation(ACT_VM_RELOAD)
@@ -94,19 +97,31 @@ end
 function SWEP:PrimaryAttack()
 	if not self:CanPrimaryAttack() then return end
 
-	if self:OnPrimaryAttack() ~= false then
-		self:SendWeaponAnim(self:GetPrimaryAttackAnimation())
-		self:CallOnOwner("SetAnimation", self:GetOwnerPrimaryAttackAnimation())
+	self:SetInPrimaryFire(true)
+	do
+		local _, BlockAnimations = xpcall(self.OnPrimaryAttack, ErrorNoHaltWithStack, self)
+
+		if BlockAnimations ~= false then
+			self:SendWeaponAnim(self:GetPrimaryAttackAnimation())
+			self:CallOnOwner("SetAnimation", self:GetOwnerPrimaryAttackAnimation())
+		end
 	end
+	self:SetInPrimaryFire(false)
 end
 
 function SWEP:SecondaryAttack()
 	if not self:CanSecondaryAttack() then return end
 
-	if self:OnSecondaryAttack() ~= false then
-		self:SendWeaponAnim(self:GetSecondaryAttackAnimation())
-		self:CallOnOwner("SetAnimation", self:GetOwnerSecondaryAttackAnimation())
+	self:SetInSecondaryFire(true)
+	do
+		local _, BlockAnimations = xpcall(self.OnSecondaryAttack, ErrorNoHaltWithStack, self)
+
+		if BlockAnimations ~= false then
+			self:SendWeaponAnim(self:GetSecondaryAttackAnimation())
+			self:CallOnOwner("SetAnimation", self:GetOwnerSecondaryAttackAnimation())
+		end
 	end
+	self:SetInSecondaryFire(false)
 end
 
 function SWEP:OnPrimaryAttack()
@@ -128,10 +143,12 @@ function SWEP:CallOnOwner(FunctionName, ...)
 	return Owner[FunctionName](Owner, ...)
 end
 
-function SWEP:ApplyNextFireTime(IsSecondary)
-	if IsSecondary then
+function SWEP:ApplyNextFireTime()
+	if self:GetInPrimaryFire() then
+		self:SetNextPrimaryFire(CurTime() + self.Primary.FireRate)
+	elseif self:GetInSecondaryFire() then
 		self:SetNextSecondaryFire(CurTime() + self.Secondary.FireRate)
 	else
-		self:SetNextPrimaryFire(CurTime() + self.Primary.FireRate)
+		error("Tried to ApplyNextFireTime outside of fire!", 2)
 	end
 end
