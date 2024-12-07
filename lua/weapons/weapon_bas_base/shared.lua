@@ -239,8 +239,10 @@ function SWEP:ApplyAimPunch()
 
 	local EyeAngles = Owner:EyeAngles()
 
-	EyeAngles.pitch = math.Clamp(math.NormalizeAngle(EyeAngles.pitch + VeritcalPunch), -89, 89) -- TODO: Use cl_pitchdown and cl_pitchup?
-	EyeAngles.yaw = math.NormalizeAngle(EyeAngles.yaw + HorizontalPunch)
+	EyeAngles.pitch = EyeAngles.pitch + VeritcalPunch
+	EyeAngles.yaw = EyeAngles.yaw + HorizontalPunch
+
+	BAS.Util.NormalizeAngle(EyeAngles)
 
 	if Owner:IsPlayer() then
 		Owner:SetEyeAngles(EyeAngles)
@@ -255,14 +257,27 @@ function SWEP:GenerateBullet(Output, BulletIndex)
 	local FireTable = self:GetCurrentFireTable()
 	local Owner = self:GetOwner()
 
+	-- Randomize base direction as well
+	local BulletSpread = self:CalculateBulletSpread(BulletIndex)
+
+	local Forward = Owner:GetForward()
+	local ForwardAngle = Forward:Angle()
+
+	ForwardAngle.pitch = ForwardAngle.pitch + BulletSpread.x
+	ForwardAngle.yaw = ForwardAngle.yaw + BulletSpread.y
+
+	BAS.Util.NormalizeAngle(ForwardAngle)
+	Forward = ForwardAngle:Forward()
+
+	-- Actual bullet stuff
 	Output = Output or {}
 
 	Output.Attacker = Owner
 	Output.IgnoreEntity = Owner
 
 	Output.Src = Owner:EyePos()
-	Output.Dir = Owner:EyeAngles():Forward()
-	Output.Spread = self:CalculateBulletSpread(BulletIndex)
+	Output.Dir = Forward
+	Output.Spread = BulletSpread
 
 	Output.AmmoType = FireTable.Ammo
 	Output.Damage = FireTable.BulletDamage
