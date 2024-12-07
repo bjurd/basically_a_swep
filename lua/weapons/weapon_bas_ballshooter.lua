@@ -18,7 +18,7 @@ SWEP.Primary = BAS.Util.SetupAmmoTable({
 
 	BulletSpread = Vector(32, 32),
 	BulletCount = 3,
-	FireRate = 0.25,
+	FireInterval = 0.25,
 
 	UsesAmmo = true,
 	Enabled = true,
