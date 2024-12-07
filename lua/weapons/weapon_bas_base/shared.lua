@@ -154,6 +154,12 @@ function SWEP:GetCurrentFireFlags(IgnoreInFire)
 	return InPrimaryFire, InSecondaryFire
 end
 
+function SWEP:GetCurrentFireTable()
+	local InPrimaryFire = self:GetCurrentFireFlags()
+
+	return InPrimaryFire and self.Primary or self.Secondary
+end
+
 function SWEP:ApplyNextFireTime()
 	local InPrimaryFire = self:GetCurrentFireFlags()
 
@@ -165,12 +171,10 @@ function SWEP:ApplyNextFireTime()
 end
 
 function SWEP:ApplyViewPunch()
-	local InPrimaryFire = self:GetCurrentFireFlags()
-
 	local Owner = self:GetOwner()
 	if not Owner:IsPlayer() then return end -- Don't call on invalid owner kthx
 
-	local PunchCone = (InPrimaryFire and self.Primary or self.Secondary).ViewPunch
+	local PunchCone = self:GetCurrentFireTable().ViewPunch
 	if PunchCone:IsZero() then return end
 
 	local VeritcalPunch = math.Rand(-math.abs(PunchCone.x), 0)
@@ -182,9 +186,7 @@ function SWEP:ApplyViewPunch()
 end
 
 function SWEP:ApplyAimPunch()
-	local InPrimaryFire = self:GetCurrentFireFlags()
-
-	local PunchCone = (InPrimaryFire and self.Primary or self.Secondary).AimPunch
+	local PunchCone = self:GetCurrentFireTable().AimPunch
 	if PunchCone:IsZero() then return end
 
 	local Owner = self:GetOwner()
@@ -205,8 +207,7 @@ function SWEP:ApplyAimPunch()
 end
 
 function SWEP:GenerateBullet()
-	local InPrimaryFire = self:GetCurrentFireFlags()
-	local AmmoData = InPrimaryFire and self.Primary or self.Secondary
+	local FireTable = self:GetCurrentFireTable()
 
 	local Owner = self:GetOwner()
 
@@ -216,14 +217,14 @@ function SWEP:GenerateBullet()
 
 		Src = Owner:EyePos(),
 		Dir = Owner:EyeAngles():Forward(),
-		Spread = Vector(AmmoData.BulletSpread),
+		Spread = Vector(FireTable.BulletSpread),
 
-		AmmoType = AmmoData.Ammo,
-		Distance = AmmoData.BulletDistance,
-		Damage = AmmoData.BulletDamage,
-		Num = 1,
+		AmmoType = FireTable.Ammo,
+		Damage = FireTable.BulletDamage,
+		Distance = FireTable.BulletDistance,
 		Force = 0,
 		HullSize = 0,
+		Num = 1,
 		Tracer = 1
 	}
 end
