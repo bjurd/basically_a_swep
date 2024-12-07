@@ -180,3 +180,26 @@ function SWEP:ApplyViewPunch()
 
 	Owner:ViewPunch(Angle(VeritcalPunch, HorizontalPunch))
 end
+
+function SWEP:ApplyAimPunch()
+	local InPrimaryFire = self:GetCurrentFireFlags()
+
+	local PunchCone = (InPrimaryFire and self.Primary or self.Secondary).AimPunch
+	if PunchCone:IsZero() then return end
+
+	local Owner = self:GetOwner()
+
+	local VeritcalPunch = math.Rand(-PunchCone.x, PunchCone.x)
+	local HorizontalPunch = math.Rand(-PunchCone.y, PunchCone.y)
+
+	local EyeAngles = Owner:EyeAngles()
+
+	EyeAngles.pitch = EyeAngles.pitch + VeritcalPunch
+	EyeAngles.yaw = EyeAngles.yaw + HorizontalPunch
+
+	if Owner:IsPlayer() then
+		Owner:SetEyeAngles(EyeAngles)
+	else
+		Owner:SetAngles(EyeAngles)
+	end
+end
