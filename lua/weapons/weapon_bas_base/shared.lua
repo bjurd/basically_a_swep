@@ -201,8 +201,8 @@ function SWEP:ApplyAimPunch()
 
 	local EyeAngles = Owner:EyeAngles()
 
-	EyeAngles.pitch = EyeAngles.pitch + VeritcalPunch
-	EyeAngles.yaw = EyeAngles.yaw + HorizontalPunch
+	EyeAngles.pitch = math.Clamp(math.NormalizeAngle(EyeAngles.pitch + VeritcalPunch), -89, 89) -- TODO: Use cl_pitchdown and cl_pitchup?
+	EyeAngles.yaw = math.NormalizeAngle(EyeAngles.yaw + HorizontalPunch)
 
 	if Owner:IsPlayer() then
 		Owner:SetEyeAngles(EyeAngles)
