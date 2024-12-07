@@ -54,9 +54,9 @@ function SWEP:OnPrimaryAttack()
 	return true
 end
 
-function SWEP:IgniteInArea(Origin)
+function SWEP:IgniteInArea(Origin, Radius)
 	local Owner = self:GetOwner()
-	local Entities = ents.FindInSphere(Origin, 50)
+	local Entities = ents.FindInSphere(Origin, Radius)
 
 	for EntityIndex = 1, #Entities do
 		local Entity = Entities[EntityIndex]
@@ -82,6 +82,6 @@ function SWEP:PostFireBullets(Data)
 	util.Effect("ToolTracer", Effect)
 
 	if SERVER then
-		self:IgniteInArea(Data.Trace.HitPos)
+		self:IgniteInArea(Data.Trace.HitPos, 50)
 	end
 end

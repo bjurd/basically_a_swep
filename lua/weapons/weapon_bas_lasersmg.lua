@@ -1,3 +1,5 @@
+DEFINE_BASECLASS("weapon_bas_laserpistol")
+
 SWEP.Base = "weapon_bas_laserpistol"
 SWEP.PrintName = "Laser SMG"
 
@@ -66,4 +68,14 @@ function SWEP:OnSecondaryAttack()
 	self:ApplyAimPunch()
 
 	return true
+end
+
+function SWEP:PostFireBullets(Data)
+	if not Data.Trace.Hit then return end
+
+	BaseClass.PostFireBullets(self, Data)
+
+	if SERVER and self:GetInSecondaryFire() then
+		self:IgniteInArea(Data.Trace.HitPos, 100)
+	end
 end
