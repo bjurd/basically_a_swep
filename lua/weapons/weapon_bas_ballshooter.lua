@@ -31,16 +31,16 @@ function SWEP:OnInitialized()
 	self:SetHoldType("shotgun")
 end
 
-function SWEP:OnPrimaryAttack()
-	if not self:CallOnOwner("IsPlayer") then return false end
+if SERVER then
+	function SWEP:SpawnBalls()
+		if not self:CallOnOwner("IsPlayer") then return end
 
-	local sent_ball = scripted_ents.GetStored("sent_ball")
-	if not sent_ball then return false end
+		local sent_ball = scripted_ents.GetStored("sent_ball")
+		if not sent_ball then return end
 
-	local SpawnFunction = scripted_ents.GetMember("sent_ball", "SpawnFunction")
-	if not SpawnFunction then return false end
+		local SpawnFunction = scripted_ents.GetMember("sent_ball", "SpawnFunction")
+		if not SpawnFunction then return end
 
-	if SERVER then
 		local Owner = self:GetOwner()
 		local BulletData = {}
 
@@ -92,6 +92,12 @@ function SWEP:OnPrimaryAttack()
 				end
 			end
 		end
+	end
+end
+
+function SWEP:OnPrimaryAttack()
+	if SERVER then
+		self:SpawnBalls()
 	end
 
 	self:TakePrimaryAmmo(1)
