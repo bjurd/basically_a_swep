@@ -9,8 +9,8 @@ SWEP.AdminOnly = false
 
 SWEP.Slot = 1
 
-SWEP.ViewModel = Model("models/player/kleiner.mdl") -- These are only set because if they're left blank the hooks aren't called
-SWEP.WorldModel = Model("models/player/kleiner.mdl")
+SWEP.ViewModel = Model("models/hunter/blocks/cube025x025x025.mdl") -- These are only set because if they're left blank the hooks aren't called
+SWEP.WorldModel = Model("models/hunter/blocks/cube025x025x025.mdl")
 
 SWEP.Primary = BAS.Util.SetupAmmoTable({
 	ViewPunch = Vector(6, 5),
