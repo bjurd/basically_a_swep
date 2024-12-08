@@ -62,7 +62,9 @@ function SWEP:OnSecondaryAttack()
 	self:FireBasicBullets()
 
 	self:TakePrimaryAmmo(1)
+
 	self:ApplyNextFireTime()
+	self:ApplyPrimaryFireInterval(self:GetCurrentFireTable().FireInterval)
 
 	self:ApplyViewPunch()
 	self:ApplyAimPunch()
