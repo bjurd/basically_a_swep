@@ -142,6 +142,9 @@ if CLIENT then
 			end
 		end
 
+		MinionModel:InvalidateBoneCache()
+		TidesModel:InvalidateBoneCache()
+
 		return MinionModel, TidesModel
 	end
 
@@ -170,5 +173,60 @@ if CLIENT then
 		TidesModel:SetRenderOrigin(RenderOrigin)
 		TidesModel:SetRenderAngles(RenderAngles)
 		TidesModel:DrawModel()
+	end
+
+	-- Absolute mess that for some reason shakes with screen shake
+	function SWEP:CalculateViewModelPosition(MinionModel, ViewSetup)
+		local ViewAngles = Angle(ViewSetup.angles)
+		local ViewDown = ViewAngles:Up()
+
+		local AngleThatGoesIntoForwardToMoveHimRight = Angle(ViewAngles)
+		AngleThatGoesIntoForwardToMoveHimRight:RotateAroundAxis(ViewDown, -15) -- Move him to the right
+
+		ViewDown:Mul(20) -- More down
+
+		local Forward = AngleThatGoesIntoForwardToMoveHimRight:Forward()
+		Forward:Mul(50)
+
+		local RenderOrigin = Vector(ViewSetup.origin)
+		local Center = Vector(MinionModel.m_vecCenter)
+
+		RenderOrigin:Sub(ViewDown) -- Move him down
+		RenderOrigin:Add(Forward)
+
+		local RenderAngles = Angle(ViewAngles)
+		RenderAngles:RotateAroundAxis(ViewDown, 180)
+
+		return RenderOrigin, RenderAngles
+	end
+
+	function SWEP:PreDrawViewModel()
+		local ViewSetup = render.GetViewSetup() -- Put this shit in viewmodel space
+
+		local MinionModel, TidesModel = self:CreateModels()
+
+		cam.Start3D(ViewSetup.origin, ViewSetup.angles, ViewSetup.fovviewmodel, ViewSetup.x, ViewSetup.y, ViewSetup.width, ViewSetup.height, ViewSetup.znear, ViewSetup.zfar)
+		do
+			cam.IgnoreZ(true)
+			do
+				local RenderOrigin, RenderAngles = self:CalculateViewModelPosition(MinionModel, ViewSetup)
+
+				MinionModel:SetRenderOrigin(RenderOrigin)
+				MinionModel:SetRenderAngles(RenderAngles)
+				MinionModel:DrawModel()
+
+				RenderOrigin, RenderAngles = self:CalculateRenderSetup(MinionModel)
+				RenderAngles:RotateAroundAxis(RenderAngles:Up(), 90)
+				RenderAngles:RotateAroundAxis(RenderAngles:Forward(), 90)
+
+				TidesModel:SetRenderOrigin(RenderOrigin)
+				TidesModel:SetRenderAngles(RenderAngles)
+				TidesModel:DrawModel()
+			end
+			cam.IgnoreZ(false)
+		end
+		cam.End3D()
+
+		return true -- Prevent the big Kleiner showing up
 	end
 end
