@@ -65,6 +65,8 @@ function SWEP:IgniteInArea(Origin, Radius)
 		if Entity:IsWeapon() then continue end
 		if Entity == Owner then continue end
 
+		if Entity:IsPlayer() and Entity:HasGodMode() then continue end
+
 		Entity:Ignite(5)
 	end
 end
