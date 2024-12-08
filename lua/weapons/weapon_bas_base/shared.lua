@@ -203,14 +203,23 @@ function SWEP:GetCurrentFireTable()
 	return FireTable
 end
 
-function SWEP:ApplyNextFireTime()
-	local FireTable = self:GetCurrentFireTable()
-	assert(FireTable, "Tried to ApplyNextFireTime outside of fire!")
+function SWEP:ApplyPrimaryFireInterval(Interval)
+	Interval = tonumber(Interval) or self.Primary.FireInterval
 
-	local ApplyFunction = self:EitherFireMode(self.SetNextPrimaryFire, self.SetNextSecondaryFire)
+	self:SetNextPrimaryFire(CurTime() + Interval)
+end
+
+function SWEP:ApplySecondaryFireInterval(Interval)
+	Interval = tonumber(Interval) or self.Secondary.FireInterval
+
+	self:SetNextSecondaryFire(CurTime() + Interval)
+end
+
+function SWEP:ApplyNextFireTime()
+	local ApplyFunction = self:EitherFireMode(self.ApplyPrimaryFireInterval, self.ApplySecondaryFireInterval)
 	assert(ApplyFunction, "Tried to ApplyNextFireTime outside of fire!")
 
-	ApplyFunction(self, CurTime() + FireTable.FireInterval)
+	ApplyFunction(self)
 end
 
 function SWEP:ApplyViewPunch()
