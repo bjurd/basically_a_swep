@@ -1,3 +1,5 @@
+DEFINE_BASECLASS("weapon_bas_shooter_base")
+
 SWEP.Base = "weapon_bas_shooter_base"
 SWEP.PrintName = "Tide Minion"
 
@@ -72,6 +74,9 @@ if SERVER then
 end
 
 if CLIENT then
+	AccessorFunc(SWEP, "m_flThrowStartTime", "ThrowStartTime", FORCE_NUMBER)
+	AccessorFunc(SWEP, "m_flThrowDuration", "ThrowDuration", FORCE_NUMBER)
+
 	function SWEP:CalculateRenderSetup(SetupEntity)
 		SetupEntity = SetupEntity or self:GetOwner()
 
@@ -148,10 +153,36 @@ if CLIENT then
 		return MinionModel, TidesModel
 	end
 
+	function SWEP:AnimateModel(MinionModel)
+		local ThrowStartTime = self:GetThrowStartTime() or 0
+		local ThrowDuration = self:GetThrowDuration() or 0
+
+		if ThrowStartTime > 0 then
+			local CurrentTime = CurTime()
+
+			if CurrentTime >= ThrowStartTime + ThrowDuration then
+				self:SetThrowStartTime(-1) -- Signal reset
+			else
+				-- Automatic frame advance please :c
+				local Cycle = (CurrentTime - ThrowStartTime) / ThrowDuration
+				Cycle = math.Clamp(Cycle, 0, 1)
+
+				MinionModel:SetSequence("seq_throw")
+				MinionModel:SetCycle(Cycle)
+			end
+		elseif ThrowStartTime == -1 then
+			MinionModel:SetSequence("ACT_HL2MP_IDLE_MELEE")
+			MinionModel:SetCycle(0)
+
+			self:SetThrowStartTime(0)
+		end
+	end
+
 	function SWEP:DrawWorldModel(Flags)
 		if bit.band(Flags, STUDIO_RENDER) ~= STUDIO_RENDER then return end
 
 		local MinionModel, TidesModel = self:CreateModels()
+		self:AnimateModel(MinionModel)
 
 		-- Make the little fella
 		local RenderOrigin, RenderAngles = self:CalculateRenderSetup(self:GetOwner())
@@ -205,6 +236,7 @@ if CLIENT then
 		local ViewSetup = render.GetViewSetup() -- Put this shit in viewmodel space
 
 		local MinionModel, TidesModel = self:CreateModels()
+		self:AnimateModel(MinionModel)
 
 		cam.Start3D(ViewSetup.origin, ViewSetup.angles, ViewSetup.fovviewmodel, ViewSetup.x, ViewSetup.y, ViewSetup.width, ViewSetup.height, ViewSetup.znear, ViewSetup.zfar)
 		do
@@ -229,5 +261,21 @@ if CLIENT then
 		cam.End3D()
 
 		return true -- Prevent the big Kleiner showing up
+	end
+
+	function SWEP:OnPrimaryAttack()
+		local Result = BaseClass.OnPrimaryAttack(self)
+
+		if Result ~= false then
+			local MinionModel = self:CreateModels()
+			local ThrowSequence, ThrowDuration = MinionModel:LookupSequence("seq_throw")
+
+			if ThrowSequence >= 0 then
+				self:SetThrowStartTime(CurTime())
+				self:SetThrowDuration(ThrowDuration)
+			end
+		end
+
+		return Result
 	end
 end
