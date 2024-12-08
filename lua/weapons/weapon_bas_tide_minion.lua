@@ -7,7 +7,7 @@ SWEP.AdminOnly = false
 
 SWEP.Slot = 1
 
-SWEP.ViewModel = ""
+SWEP.ViewModel = Model("models/player/kleiner.mdl") -- These are only set because if they're left blank the hooks aren't called
 SWEP.WorldModel = Model("models/player/kleiner.mdl")
 
 SWEP.Primary = BAS.Util.SetupAmmoTable({
@@ -158,8 +158,8 @@ if CLIENT then
 		Center:Rotate(RenderAngles)
 		RenderOrigin:Sub(Center)
 
-		MinionModel:SetPos(RenderOrigin)
-		MinionModel:SetAngles(RenderAngles)
+		MinionModel:SetRenderOrigin(RenderOrigin)
+		MinionModel:SetRenderAngles(RenderAngles)
 		MinionModel:DrawModel()
 
 		-- Make his weapon
@@ -167,8 +167,8 @@ if CLIENT then
 		RenderAngles:RotateAroundAxis(RenderAngles:Up(), 90)
 		RenderAngles:RotateAroundAxis(RenderAngles:Forward(), 90)
 
-		TidesModel:SetPos(RenderOrigin)
-		TidesModel:SetAngles(RenderAngles)
+		TidesModel:SetRenderOrigin(RenderOrigin)
+		TidesModel:SetRenderAngles(RenderAngles)
 		TidesModel:DrawModel()
 	end
 end
