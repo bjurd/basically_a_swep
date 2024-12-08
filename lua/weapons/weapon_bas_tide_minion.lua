@@ -70,6 +70,7 @@ if SERVER then
 
 			Tides:SetCreator(Owner)
 			Owner:AddCleanup("props", Tides)
+			Tides:SetPhysicsAttacker(Owner)
 
 			local PhysicsObject = Tides:GetPhysicsObject()
 
