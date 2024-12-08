@@ -47,6 +47,8 @@ function SWEP:OnPrimaryAttack()
 		local MaxVelocity = GetConVar("sv_maxvelocity"):GetInt()
 
 		for BulletIndex = 1, self:GetCurrentFireTable().BulletCount do
+			if not hook.Run("PlayerSpawnSENT", Owner, "sent_ball") then continue end -- No bypasses here!
+
 			self:GenerateBullet(BulletData)
 
 			-- Doesn't matter if we modify these
@@ -63,7 +65,6 @@ function SWEP:OnPrimaryAttack()
 			local TraceResult = self:RunTrace(StartPos, EndPos)
 			TraceResult.Hit = true -- Force the ball to spawn in front
 
-			if not hook.Run("PlayerSpawnSENT", Owner, "sent_ball") then continue end -- No bypasses here!
 			local Ball = SpawnFunction(sent_ball, Owner, TraceResult, "sent_ball")
 
 			if Ball then
