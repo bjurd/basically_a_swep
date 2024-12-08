@@ -50,11 +50,13 @@ if SERVER then
 		undo.Create("Prop")
 		undo.SetPlayer(Owner)
 		undo.AddEntity(Item)
-		undo.Finish("Prop (models/props/de_tides/gate_large.mdl)")
+		undo.Finish("Prop (" .. Item:GetModel() .. ")")
 
 		Item:SetCreator(Owner)
 		Owner:AddCleanup("props", Item)
 		Item:SetPhysicsAttacker(Owner)
+
+		hook.Run("PlayerSpawnedProp", Owner, Item:GetModel(), Item)
 	end
 
 	function SWEP:PostItemSpawned(Item, SpawnTrace)

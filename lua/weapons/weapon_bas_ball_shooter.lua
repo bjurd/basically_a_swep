@@ -66,6 +66,8 @@ if SERVER then
 
 		Item:SetCreator(Owner)
 		Owner:AddCleanup("sents", Item)
+
+		hook.Run("PlayerSpawnedSENT", Owner, Item)
 	end
 
 	function SWEP:PostItemSpawned(Item, SpawnTrace)
