@@ -177,16 +177,16 @@ if CLIENT then
 
 	-- Absolute mess that for some reason shakes with screen shake
 	function SWEP:CalculateViewModelPosition(MinionModel, ViewSetup)
-		local ViewAngles = Angle(ViewSetup.angles)
+		local ViewAngles = self:GetOwner():EyeAngles() -- May look off but prevents the freakout on screen shake
 		local ViewDown = ViewAngles:Up()
 
 		local AngleThatGoesIntoForwardToMoveHimRight = Angle(ViewAngles)
-		AngleThatGoesIntoForwardToMoveHimRight:RotateAroundAxis(ViewDown, -15) -- Move him to the right
+		AngleThatGoesIntoForwardToMoveHimRight:RotateAroundAxis(ViewDown, -20) -- Move him to the right
 
 		ViewDown:Mul(20) -- More down
 
 		local Forward = AngleThatGoesIntoForwardToMoveHimRight:Forward()
-		Forward:Mul(50)
+		Forward:Mul(45)
 
 		local RenderOrigin = Vector(ViewSetup.origin)
 		local Center = Vector(MinionModel.m_vecCenter)
@@ -196,6 +196,7 @@ if CLIENT then
 
 		local RenderAngles = Angle(ViewAngles)
 		RenderAngles:RotateAroundAxis(ViewDown, 180)
+		RenderAngles:RotateAroundAxis(ViewDown, -1)
 
 		return RenderOrigin, RenderAngles
 	end
