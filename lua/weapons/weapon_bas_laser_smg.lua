@@ -1,6 +1,6 @@
-DEFINE_BASECLASS("weapon_bas_laserpistol")
+DEFINE_BASECLASS("weapon_bas_laser_pistol")
 
-SWEP.Base = "weapon_bas_laserpistol"
+SWEP.Base = "weapon_bas_laser_pistol"
 SWEP.PrintName = "Laser SMG"
 
 SWEP.Category = "Basically Some SWEPs"
