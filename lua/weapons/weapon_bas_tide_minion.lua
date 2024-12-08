@@ -1,4 +1,4 @@
-SWEP.Base = "weapon_bas_base"
+SWEP.Base = "weapon_bas_shooter_base"
 SWEP.PrintName = "Tide Minion"
 
 SWEP.Category = "Basically Some SWEPs"
@@ -28,74 +28,45 @@ function SWEP:OnInitialized()
 end
 
 if SERVER then
-	function SWEP:ThrowTides()
-		if not self:CallOnOwner("IsPlayer") then return end
+	function SWEP:OwnerCanSpawnItem()
+		return hook.Run("PlayerSpawnProp", self:GetOwner(), "models/props/de_tides/gate_large.mdl")
+	end
 
+	function SWEP:SpawnItem(ItemIndex, SpawnTrace)
+		local Tides = ents.Create("prop_physics")
+		if not IsValid(Tides) then return NULL end
+
+		Tides:SetModel("models/props/de_tides/gate_large.mdl")
+		Tides:SetPos(SpawnTrace.HitPos)
+		Tides:SetAngles(SpawnTrace.Normal:Angle())
+		Tides:Spawn()
+
+		return Tides
+	end
+
+	function SWEP:RegisterSpawnedItem(Item, SpawnTrace)
 		local Owner = self:GetOwner()
-		local BulletData = {}
 
-		local MaxVelocity = GetConVar("sv_maxvelocity"):GetInt()
+		undo.Create("Prop")
+		undo.SetPlayer(Owner)
+		undo.AddEntity(Item)
+		undo.Finish("Prop (models/props/de_tides/gate_large.mdl)")
 
-		for BulletIndex = 1, self:GetCurrentFireTable().BulletCount do
-			if not hook.Run("PlayerSpawnProp", Owner, "models/props/de_tides/gate_large.mdl") then continue end
+		Item:SetCreator(Owner)
+		Owner:AddCleanup("props", Item)
+		Item:SetPhysicsAttacker(Owner)
+	end
 
-			self:GenerateBullet(BulletData)
+	function SWEP:PostItemSpawned(Item, SpawnTrace)
+		local PhysicsObject = Item:GetPhysicsObject()
 
-			local StartPos = BulletData.Src
-			local EndPos = BulletData.Dir
+		if IsValid(PhysicsObject) then
+			local Forward = SpawnTrace.Normal
+			Forward:Mul(GetConVar("sv_maxvelocity"):GetInt())
 
-			EndPos:Mul(Owner:BoundingRadius() * 3)
-
-			EndPos.y = EndPos.y + math.Rand(-BulletData.Spread.x, BulletData.Spread.x)
-			EndPos.z = EndPos.z + math.Rand(-BulletData.Spread.y, BulletData.Spread.y)
-
-			EndPos:Add(StartPos)
-
-			local TraceResult = self:RunTrace(StartPos, EndPos)
-
-			local Tides = ents.Create("prop_physics")
-			if not IsValid(Tides) then continue end
-
-			Tides:SetModel("models/props/de_tides/gate_large.mdl")
-			Tides:SetPos(TraceResult.HitPos)
-			Tides:SetAngles(TraceResult.Normal:Angle())
-			Tides:Spawn()
-
-			undo.Create("Prop")
-			do
-				undo.SetPlayer(Owner)
-				undo.AddEntity(Tides)
-			end
-			undo.Finish("Prop (models/props/de_tides/gate_large.mdl)")
-
-			Tides:SetCreator(Owner)
-			Owner:AddCleanup("props", Tides)
-			Tides:SetPhysicsAttacker(Owner)
-
-			local PhysicsObject = Tides:GetPhysicsObject()
-
-			if IsValid(PhysicsObject) then
-				local Forward = TraceResult.Normal
-				Forward:Mul(MaxVelocity)
-
-				PhysicsObject:SetVelocity(Forward)
-			end
+			PhysicsObject:SetVelocity(Forward)
 		end
 	end
-end
-
-function SWEP:OnPrimaryAttack()
-	if SERVER then
-		self:ThrowTides()
-	end
-
-	self:TakePrimaryAmmo(1)
-	self:ApplyNextFireTime()
-
-	self:ApplyViewPunch()
-	self:ApplyAimPunch()
-
-	return true
 end
 
 if CLIENT then
