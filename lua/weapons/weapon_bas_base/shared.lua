@@ -229,6 +229,8 @@ function SWEP:ApplyViewPunch()
 	local PunchCone = self:GetCurrentFireTable().ViewPunch
 	if PunchCone:IsZero() then return end
 
+	math.randomseed(CurTime())
+
 	local VeritcalPunch = math.Rand(-math.abs(PunchCone.x), 0)
 	if PunchCone.x < 0 then VeritcalPunch = -VeritcalPunch end
 
@@ -237,27 +239,29 @@ function SWEP:ApplyViewPunch()
 	Owner:ViewPunch(Angle(VeritcalPunch, HorizontalPunch))
 end
 
-function SWEP:ApplyAimPunch()
-	local PunchCone = self:GetCurrentFireTable().AimPunch
-	if PunchCone:IsZero() then return end
+function SWEP:ApplyAimPunch() -- Need a way to fix prediction errors with this
+	-- local PunchCone = self:GetCurrentFireTable().AimPunch
+	-- if PunchCone:IsZero() then return end
 
-	local Owner = self:GetOwner()
+	-- local Owner = self:GetOwner()
 
-	local VeritcalPunch = math.Rand(-PunchCone.x, PunchCone.x)
-	local HorizontalPunch = math.Rand(-PunchCone.y, PunchCone.y)
+	-- local VeritcalPunch = math.Rand(-PunchCone.x, PunchCone.x)
+	-- local HorizontalPunch = math.Rand(-PunchCone.y, PunchCone.y)
 
-	local EyeAngles = Owner:EyeAngles()
+	-- local EyeAngles = Owner:EyeAngles()
 
-	EyeAngles.pitch = EyeAngles.pitch + VeritcalPunch
-	EyeAngles.yaw = EyeAngles.yaw + HorizontalPunch
+	-- EyeAngles.pitch = EyeAngles.pitch + VeritcalPunch
+	-- EyeAngles.yaw = EyeAngles.yaw + HorizontalPunch
 
-	BAS.Util.NormalizeAngle(EyeAngles)
+	-- BAS.Util.NormalizeAngle(EyeAngles)
 
-	if Owner:IsPlayer() then
-		Owner:SetEyeAngles(EyeAngles)
-	else
-		Owner:SetAngles(EyeAngles)
-	end
+	-- if Owner:IsPlayer() then
+	-- 	Owner:SetEyeAngles(EyeAngles)
+	-- else
+	-- 	Owner:SetAngles(EyeAngles)
+	-- end
+
+	return
 end
 
 function SWEP:GenerateBullet(Output, BulletIndex)
