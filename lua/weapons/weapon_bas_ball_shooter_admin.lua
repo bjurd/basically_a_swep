@@ -18,7 +18,7 @@ SWEP.Primary = BAS.Util.SetupAmmoTable({
 	UsesAmmo = true,
 	Enabled = true,
 
-	Sound = ")weapons/shotgun/shotgun_fire7.wav"
+	FireSound = ")weapons/shotgun/shotgun_fire7.wav"
 })
 
 if SERVER then

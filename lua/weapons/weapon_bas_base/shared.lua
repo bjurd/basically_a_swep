@@ -141,7 +141,7 @@ function SWEP:PrimaryAttack()
 			self:CallOnOwner("MuzzleFlash")
 			self:CallOnOwner("SetAnimation", self:GetOwnerPrimaryAttackAnimation())
 
-			self:EmitSound(self.Primary.Sound)
+			self:EmitSound(self.Primary.FireSound)
 		end
 	end
 	self:SetInPrimaryFire(false)
@@ -160,7 +160,7 @@ function SWEP:SecondaryAttack()
 			self:CallOnOwner("MuzzleFlash")
 			self:CallOnOwner("SetAnimation", self:GetOwnerSecondaryAttackAnimation())
 
-			self:EmitSound(self.Secondary.Sound)
+			self:EmitSound(self.Secondary.FireSound)
 		end
 	end
 	self:SetInSecondaryFire(false)

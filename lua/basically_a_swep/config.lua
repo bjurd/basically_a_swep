@@ -48,7 +48,7 @@ Config.DefaultAmmoTable = {
 	Enabled = false,
 
 	-- The sound to play when fired
-	Sound = ""
+	FireSound = ""
 }
 
 return Config

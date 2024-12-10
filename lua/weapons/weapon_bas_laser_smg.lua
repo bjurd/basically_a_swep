@@ -31,7 +31,7 @@ SWEP.Primary = BAS.Util.SetupAmmoTable({
 	UsesAmmo = true,
 	Enabled = true,
 
-	Sound = "beams/beamstart5.wav"
+	FireSound = "beams/beamstart5.wav"
 })
 
 SWEP.Secondary = BAS.Util.SetupAmmoTable({
