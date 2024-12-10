@@ -12,6 +12,9 @@ SWEP.Slot = 1
 SWEP.ViewModel = Model("models/hunter/blocks/cube025x025x025.mdl") -- These are only set because if they're left blank the hooks aren't called
 SWEP.WorldModel = Model("models/hunter/blocks/cube025x025x025.mdl")
 
+SWEP.MinionModelStr = Model("models/player/kleiner.mdl")
+SWEP.TidesModelStr = Model("models/props/de_tides/gate_large.mdl")
+
 SWEP.Primary = BAS.Util.SetupAmmoTable({
 	ViewPunch = Vector(6, 5),
 
@@ -31,14 +34,14 @@ end
 
 if SERVER then
 	function SWEP:OwnerCanSpawnItem()
-		return hook.Run("PlayerSpawnProp", self:GetOwner(), "models/props/de_tides/gate_large.mdl")
+		return hook.Run("PlayerSpawnProp", self:GetOwner(), self.TidesModelStr)
 	end
 
 	function SWEP:SpawnItem(ItemIndex, SpawnTrace)
 		local Tides = ents.Create("prop_physics")
 		if not IsValid(Tides) then return NULL end
 
-		Tides:SetModel("models/props/de_tides/gate_large.mdl")
+		Tides:SetModel(self.TidesModelStr)
 		Tides:SetPos(SpawnTrace.HitPos)
 		Tides:SetAngles(SpawnTrace.Normal:Angle())
 		Tides:Spawn()
@@ -59,17 +62,6 @@ if SERVER then
 		Item:SetPhysicsAttacker(Owner)
 
 		hook.Run("PlayerSpawnedProp", Owner, Item:GetModel(), Item)
-	end
-
-	function SWEP:PostItemSpawned(Item, SpawnTrace)
-		local PhysicsObject = Item:GetPhysicsObject()
-
-		if IsValid(PhysicsObject) then
-			local Forward = SpawnTrace.Normal
-			Forward:Mul(GetConVar("sv_maxvelocity"):GetInt())
-
-			PhysicsObject:SetVelocity(Forward)
-		end
 	end
 end
 
@@ -117,7 +109,7 @@ if CLIENT then
 		local MinionModel = self:GetMinionModel()
 
 		if not IsValid(MinionModel) then
-			MinionModel = ClientsideModel(Model("models/player/kleiner.mdl"), RENDERGROUP_OPAQUE)
+			MinionModel = ClientsideModel(self.MinionModelStr, RENDERGROUP_OPAQUE)
 
 			if IsValid(MinionModel) then
 				self:SetMinionModel(MinionModel)
@@ -135,7 +127,7 @@ if CLIENT then
 		local TidesModel = self:GetTidesModel()
 
 		if not IsValid(TidesModel) then
-			TidesModel = ClientsideModel(Model("models/props/de_tides/gate_large.mdl"), RENDERGROUP_OPAQUE)
+			TidesModel = ClientsideModel(self.TidesModelStr, RENDERGROUP_OPAQUE)
 
 			if IsValid(TidesModel) then
 				self:SetTidesModel(TidesModel)
@@ -220,8 +212,6 @@ if CLIENT then
 		Forward:Mul(45)
 
 		local RenderOrigin = Vector(ViewSetup.origin)
-		local Center = Vector(MinionModel.m_vecCenter)
-
 		RenderOrigin:Sub(ViewDown) -- Move him down
 		RenderOrigin:Add(Forward)
 

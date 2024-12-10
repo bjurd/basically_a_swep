@@ -69,15 +69,4 @@ if SERVER then
 
 		hook.Run("PlayerSpawnedSENT", Owner, Item)
 	end
-
-	function SWEP:PostItemSpawned(Item, SpawnTrace)
-		local PhysicsObject = Item:GetPhysicsObject()
-
-		if IsValid(PhysicsObject) then
-			local Forward = SpawnTrace.Normal
-			Forward:Mul(GetConVar("sv_maxvelocity"):GetInt())
-
-			PhysicsObject:SetVelocity(Forward)
-		end
-	end
 end

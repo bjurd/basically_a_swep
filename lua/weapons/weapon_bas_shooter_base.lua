@@ -34,6 +34,15 @@ if SERVER then
 
 	function SWEP:PostItemSpawned(Item, SpawnTrace)
 		-- For override
+
+		local PhysicsObject = Item.GetPhysicsObject and Item:GetPhysicsObject() or nil
+
+		if IsValid(PhysicsObject) then
+			local Forward = Vector(SpawnTrace.Normal)
+			Forward:Mul(GetConVar("sv_maxvelocity"):GetInt())
+
+			PhysicsObject:SetVelocity(Forward)
+		end
 	end
 
 	function SWEP:TrySpawnItems()
