@@ -7,6 +7,7 @@ SWEP.WorldModel = Model("models/error.mdl")
 SWEP.UseHands = true
 
 SWEP.ReloadSound = ""
+SWEP.DeploySound = ""
 
 SWEP.Primary = BAS.Util.GenerateAmmoTable()
 SWEP.Secondary = BAS.Util.GenerateAmmoTable()
@@ -67,6 +68,23 @@ end
 
 function SWEP:OnInitialized()
 	-- For override
+end
+
+function SWEP:Deploy()
+	self:EmitSound(self.DeploySound)
+
+	if self:OnDeploy() == false then
+		return false
+	end
+
+	return true
+end
+
+function SWEP:OnDeploy()
+	-- For override
+	-- Return false to deny lastinv
+
+	return true
 end
 
 function SWEP:CanReload()
