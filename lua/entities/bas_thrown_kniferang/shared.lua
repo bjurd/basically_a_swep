@@ -67,12 +67,12 @@ function ENT:TraceMove()
 
 	TraceData.start = StartPos
 	TraceData.endpos = EndPos
-	TraceData.filter = self
 
 	if self:GetHitSomething() then
 		-- Come back no matter what
-		TraceData.ignoreworld = true
-		TraceData.collisiongroup = COLLISION_GROUP_DEBRIS
+		TraceData.mask = 0
+	else
+		TraceData.filter = self
 	end
 
 	return BAS.Util.RunTrace()
