@@ -35,7 +35,16 @@ SWEP.Primary = BAS.Util.SetupAmmoTable({
 SWEP.BlacklistClasses = {
 	gmod_hands = true,
 	predicted_viewmodel = true,
+	swcs_shield = true,
+	vfire = true,
+	vfire_ball = true,
+	vfire_cluster = true,
 	viewmodel = true
+}
+
+-- Don't start a fire if these were hit
+SWEP.BlockingClasses = {
+	swcs_shield = true
 }
 
 function SWEP:OnInitialized()
@@ -88,6 +97,12 @@ function SWEP:PostFireBullets(Data)
 		Effect:SetEntity(self)
 	end
 	util.Effect("ToolTracer", Effect)
+
+	if IsValid(Data.Trace.Entity) then
+		if self.BlockingClasses[Data.Trace.Entity:GetClass()] then
+			return
+		end
+	end
 
 	if SERVER then
 		self:IgniteInArea(Data.Trace.HitPos, 50)
