@@ -54,20 +54,26 @@ function SWEP:OnPrimaryAttack()
 	return true
 end
 
+function SWEP:CanIgnite(Entity)
+	if not Entity:IsValid() then return true end
+
+	if Entity == self:GetOwner() then return false end
+
+	if self.BlacklistClasses[Entity:GetClass()] then return false end
+	if Entity:IsWeapon() then return false end
+	if Entity:IsPlayer() and Entity:HasGodMode() then return false end
+
+	return self:CanIgnite(Entity:GetParent())
+end
+
 function SWEP:IgniteInArea(Origin, Radius)
 	local Owner = self:GetOwner()
 	local Entities = ents.FindInSphere(Origin, Radius)
 
 	for EntityIndex = 1, #Entities do
-		local Entity = Entities[EntityIndex]
+		if not self:CanIgnite(Entities[EntityIndex]) then continue end
 
-		if self.BlacklistClasses[Entity:GetClass()] then continue end
-		if Entity:IsWeapon() then continue end
-		if Entity == Owner then continue end
-
-		if Entity:IsPlayer() and Entity:HasGodMode() then continue end
-
-		Entity:Ignite(5)
+		Entities[EntityIndex]:Ignite(5)
 	end
 end
 
