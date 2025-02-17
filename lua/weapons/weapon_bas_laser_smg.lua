@@ -83,6 +83,6 @@ function SWEP:PostFireBullets(Data)
 	util.Effect("ToolTracer", Effect)
 
 	if SERVER then
-		self:IgniteInArea(Data.Trace.HitPos, self:GetInSecondaryFire() and 100 or 50)
+		self:IgniteInArea(Data.Trace.HitPos, self:EitherFireMode(50, 100, 50))
 	end
 end
