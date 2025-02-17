@@ -63,24 +63,50 @@ function SWEP:OnPrimaryAttack()
 	return true
 end
 
-function SWEP:CanIgnite(Entity)
+function SWEP:CanIgnite(Entity, Owner, DamageInfo)
 	if not Entity:IsValid() then return true end
 
-	if Entity == self:GetOwner() then return false end
+	if Entity == Owner then return false end
 
 	if self.BlacklistClasses[Entity:GetClass()] then return false end
 	if Entity:IsWeapon() then return false end
-	if Entity:IsPlayer() and Entity:HasGodMode() then return false end
+
+	if Entity:IsPlayer() then
+		if Entity:HasGodMode() then
+			return false
+		end
+
+		if hook.Run("PlayerShouldTakeDamage", Entity, Owner) == false then
+			return false
+		end
+	end
+
+	if hook.Run("EntityTakeDamage", Entity, DamageInfo) == true then
+		return false
+	end
 
 	return self:CanIgnite(Entity:GetParent())
 end
 
 function SWEP:IgniteInArea(Origin, Radius)
-	local Owner = self:GetOwner()
 	local Entities = ents.FindInSphere(Origin, Radius)
+	if #Entities < 1 then return end
+
+	local Owner = self:GetOwner()
+
+	local FireTable = self:GetCurrentFireTable()
+	local DamageInfo = DamageInfo()
+	DamageInfo:SetAmmoType(self:EitherFireMode(self.GetPrimaryAmmoType, self.GetSecondaryAmmoType, self.GetPrimaryAmmoType)(self)) -- Ew
+	DamageInfo:SetAttacker(Owner)
+	DamageInfo:SetBaseDamage(FireTable.BulletDamage)
+	DamageInfo:SetDamage(FireTable.BulletDamage)
+	DamageInfo:SetDamageForce(vector_origin)
+	DamageInfo:SetDamageType(bit.bor(DMG_BULLET, DMG_BURN))
+	DamageInfo:SetInflictor(self)
+	DamageInfo:SetReportedPosition(self:GetPos())
 
 	for EntityIndex = 1, #Entities do
-		if not self:CanIgnite(Entities[EntityIndex]) then continue end
+		if not self:CanIgnite(Entities[EntityIndex], Owner, DamageInfo) then continue end
 
 		Entities[EntityIndex]:Ignite(5)
 	end

@@ -1,5 +1,3 @@
-DEFINE_BASECLASS("weapon_bas_laser_pistol")
-
 SWEP.Base = "weapon_bas_laser_pistol"
 SWEP.PrintName = "Laser SMG"
 
@@ -51,7 +49,7 @@ SWEP.Secondary = BAS.Util.SetupAmmoTable({
 	UsesAmmo = true,
 	Enabled = true,
 
-	Sound = "beams/beamstart5.wav"
+	FireSound = "beams/beamstart5.wav"
 })
 
 function SWEP:OnInitialized()
@@ -75,7 +73,14 @@ end
 function SWEP:PostFireBullets(Data)
 	if not Data.Trace.Hit then return end
 
-	BaseClass.PostFireBullets(self, Data)
+	local Effect = EffectData()
+	do
+		Effect:SetOrigin(Data.Trace.HitPos)
+		Effect:SetStart(Data.Trace.StartPos)
+		Effect:SetAttachment(1)
+		Effect:SetEntity(self)
+	end
+	util.Effect("ToolTracer", Effect)
 
 	if SERVER and self:GetInSecondaryFire() then
 		self:IgniteInArea(Data.Trace.HitPos, 100)
