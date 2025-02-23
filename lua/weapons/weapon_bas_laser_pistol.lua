@@ -85,7 +85,7 @@ function SWEP:CanIgnite(Entity, Owner, DamageInfo)
 		return false
 	end
 
-	return self:CanIgnite(Entity:GetParent())
+	return self:CanIgnite(Entity:GetParent(), DamageInfo)
 end
 
 function SWEP:IgniteInArea(Origin, Radius)
