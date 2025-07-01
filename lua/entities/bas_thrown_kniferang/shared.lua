@@ -92,7 +92,11 @@ function ENT:OnHitEntity(TraceResult)
 			local DamageInfo = DamageInfo()
 			do
 				DamageInfo:SetDamage(80)
-				DamageInfo:SetAttacker(Thrower)
+
+				if IsValid(Thrower) then -- Retarded that this can't be NULL
+					DamageInfo:SetAttacker(Thrower)
+				end
+
 				DamageInfo:SetInflictor(self)
 				DamageInfo:SetDamageType(DMG_SLASH)
 				DamageInfo:SetDamageForce(self:GetForward() * -10000)
